@@ -16,6 +16,7 @@ model User {
   verified   Boolean?
   from       String
   hash       String
+  hashedRt   String?
 
   @@map("users")
 }

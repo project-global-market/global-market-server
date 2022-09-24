@@ -1,14 +1,18 @@
 import { ConfigService } from '@nestjs/config'
 import { JwtService } from '@nestjs/jwt'
-import { Injectable, ForbiddenException } from '@nestjs/common'
+import {
+  Injectable,
+  ForbiddenException,
+  NotFoundException,
+} from '@nestjs/common'
 import * as argon2 from 'argon2'
 
-import { SignUpDto } from './dto'
-import { I_SignUp, T_Tokens } from './models'
+import { SignInDto, SignUpDto } from './dto'
+import { I_SignIn, I_SignUp, T_Tokens } from './models'
 
-import { PrismaService } from 'modules/prisma/prisma.service'
-import { UsersService } from 'modules/users/users.service'
 import { E_AuthType } from 'models/app'
+import { UsersService } from 'modules/users/users.service'
+import { PrismaService } from 'modules/prisma/prisma.service'
 
 @Injectable()
 export class AuthService {
@@ -34,13 +38,63 @@ export class AuthService {
     })
 
     const tokens = await this.getTokens(user.id, user.email)
+    await this.updateRefreshToken(user.id, tokens.refreshToken)
 
     return {
-      token: tokens.accessToken,
+      tokens: {
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
+      },
       id: user.id,
       email: user.email,
       username: user.username,
-      message: 'Account has been created successfully...',
+      message: 'Successfully created',
+    }
+  }
+
+  async signIn(dto: SignInDto): Promise<I_SignIn> {
+    const user = await this.usersService.findUserByEmail(dto.email)
+    if (!user) throw new ForbiddenException('User not found')
+
+    if (user.from !== E_AuthType.email)
+      throw new ForbiddenException('User registered through another service')
+
+    const passwordMatches = await argon2.verify(user.hash, dto.password)
+
+    if (!passwordMatches) throw new ForbiddenException('Wrong password')
+
+    const tokens = await this.getTokens(user.id, user.email)
+    await this.updateRefreshToken(user.id, tokens.refreshToken)
+
+    return {
+      tokens: {
+        accessToken: tokens.accessToken,
+        refreshToken: tokens.refreshToken,
+      },
+      id: user.id,
+      email: user.email,
+      username: user.username,
+      message: 'Successfully authorized',
+    }
+  }
+
+  async refreshToken(email: string, rt: string): Promise<T_Tokens> {
+    try {
+      const user = await this.usersService.findUserByEmail(email)
+
+      if (!user) throw new ForbiddenException('Incorrect data')
+
+      const refreshTokenMatches = await argon2.verify(user.hashedRt, rt)
+
+      if (!refreshTokenMatches)
+        throw new ForbiddenException('Incorrect refresh token')
+
+      const tokens = await this.getTokens(user.id, user.email)
+      await this.updateRefreshToken(user.id, tokens.refreshToken)
+
+      return tokens
+    } catch {
+      throw new NotFoundException('Refresh token expired')
     }
   }
 
@@ -72,5 +126,20 @@ export class AuthService {
       accessToken: at,
       refreshToken: rt,
     }
+  }
+
+  async updateRefreshToken(
+    userId: number,
+    refreshToken: string,
+  ): Promise<void> {
+    const hash = await argon2.hash(refreshToken)
+    await this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        hashedRt: hash,
+      },
+    })
   }
 }

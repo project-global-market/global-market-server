@@ -1,10 +1,13 @@
 import { Post, Body, HttpCode, UseGuards, Req } from '@nestjs/common/decorators'
 import { Controller, HttpStatus } from '@nestjs/common'
-import { ApiResponse, ApiTags } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger'
+import { AuthGuard } from '@nestjs/passport'
 
 import { AuthService } from './auth.service'
-import { I_SignUp } from './models'
-import { SignUpDto } from './dto'
+import { I_SignIn, I_SignUp } from './models'
+import { T_Tokens } from './models/tokens.model'
+import { SignInDto, SignUpDto } from './dto'
+import { Request } from 'express'
 
 @Controller('auth')
 @ApiTags('Auth')
@@ -15,9 +18,44 @@ export class AuthController {
   @HttpCode(HttpStatus.CREATED)
   @ApiResponse({
     status: HttpStatus.CREATED,
-    description: 'Successfully created account.',
+    description: 'Account created',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Forbidden',
   })
   signUp(@Body() dto: SignUpDto): Promise<I_SignUp> {
     return this.authService.signUp(dto)
+  }
+
+  @Post('signin')
+  @HttpCode(HttpStatus.OK)
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'User authorized',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Forbidden',
+  })
+  signIn(@Body() dto: SignInDto): Promise<I_SignIn> {
+    return this.authService.signIn(dto)
+  }
+
+  @UseGuards(AuthGuard('jwt-refresh'))
+  @Post('refresh')
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Token refreshed',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Forbidden',
+  })
+  refreshToken(@Req() req: Request): Promise<T_Tokens> {
+    const user = req.user
+    return this.authService.refreshToken(user['email'], user['refreshToken'])
   }
 }
