@@ -93,7 +93,7 @@ export class UsersController {
   @HttpCode(HttpStatus.OK)
   @ApiResponse({
     status: HttpStatus.CREATED,
-    description: 'User created',
+    description: 'User deleted',
   })
   @ApiResponse({
     status: HttpStatus.FORBIDDEN,
