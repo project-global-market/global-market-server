@@ -8,15 +8,23 @@ datasource db {
 }
 
 model User {
-  id         Int      @id @default(autoincrement())
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-  email      String?  @unique
+  id         Int       @id @default(autoincrement())
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  email      String?   @unique
   username   String
   verified   Boolean?
   from       String
   hash       String
   hashedRt   String?
+  role       RoleValue @default(User)
 
   @@map("users")
+}
+
+enum RoleValue {
+  SuperAdmin
+  Admin
+  Moderator
+  User
 }

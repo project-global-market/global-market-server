@@ -48,6 +48,7 @@ export class AuthService {
       id: user.id,
       email: user.email,
       username: user.username,
+      role: user.role,
       message: 'Successfully created',
     }
   }
@@ -74,6 +75,7 @@ export class AuthService {
       id: user.id,
       email: user.email,
       username: user.username,
+      role: user.role,
       message: 'Successfully authorized',
     }
   }

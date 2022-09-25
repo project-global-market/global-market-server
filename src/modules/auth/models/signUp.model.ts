@@ -5,5 +5,6 @@ export interface I_SignUp {
   id: number
   email: string
   username: string
+  role: string
   message: string
 }
