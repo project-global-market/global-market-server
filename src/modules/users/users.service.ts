@@ -37,19 +37,23 @@ export class UsersService {
     if (authorizedUser.role === 'User')
       throw new ForbiddenException('Permission denied')
 
-    const user = await this.prisma.user.findUnique({
-      where: { id: +id },
-      select: {
-        id: true,
-        username: true,
-        role: true,
-        verified: true,
-        email: true,
-        updated_at: true,
-        created_at: true,
-        from: true,
-      },
-    })
+    const user = await this.prisma.user
+      .findUnique({
+        where: { id: +id },
+        select: {
+          id: true,
+          username: true,
+          role: true,
+          verified: true,
+          email: true,
+          updated_at: true,
+          created_at: true,
+          from: true,
+        },
+      })
+      .catch(() => {
+        throw new ForbiddenException('User not found')
+      })
 
     return user
   }
