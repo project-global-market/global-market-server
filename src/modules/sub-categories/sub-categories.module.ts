@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common'
 
-import { SubCategoriesController } from './sub-categories.controller'
 import { SubCategoriesService } from './sub-categories.service'
 
+import { UsersService } from 'modules/users/users.service'
+
 @Module({
-  providers: [SubCategoriesService],
-  controllers: [SubCategoriesController],
+  providers: [SubCategoriesService, UsersService],
 })
 export class SubCategoriesModule {}
