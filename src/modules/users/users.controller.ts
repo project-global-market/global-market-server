@@ -20,8 +20,8 @@ import { UsersService } from './users.service'
 
 @ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'))
-@Controller('user')
-@ApiTags('User')
+@Controller('users')
+@ApiTags('Users')
 export class UsersController {
   constructor(private usersService: UsersService) {}
 

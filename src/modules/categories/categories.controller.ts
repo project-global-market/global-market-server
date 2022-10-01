@@ -29,8 +29,8 @@ import {
   UpdateSubCategoryDto,
 } from 'modules/sub-categories/dto'
 
-@Controller('category')
-@ApiTags('Category')
+@Controller('categories')
+@ApiTags('Categories')
 export class CategoriesController {
   constructor(
     private categoriesService: CategoriesService,
@@ -149,7 +149,7 @@ export class CategoriesController {
     return this.subCategoriesService.getAllSubCategories(Number(categoryId))
   }
 
-  @Get(':id/sub-category/:subCategoryId')
+  @Get(':id/sub-categories/:subCategoryId')
   @HttpCode(HttpStatus.OK)
   @ApiResponse({
     status: HttpStatus.OK,
@@ -169,7 +169,9 @@ export class CategoriesController {
     )
   }
 
-  @Post(':id/sub-category')
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  @Post(':id/sub-categories')
   @HttpCode(HttpStatus.CREATED)
   @ApiResponse({
     status: HttpStatus.CREATED,
@@ -186,7 +188,9 @@ export class CategoriesController {
     return this.subCategoriesService.createSubCategory(Number(categoryId), dto)
   }
 
-  @Put(':id/sub-category/:subCategoryId')
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  @Put(':id/sub-categories/:subCategoryId')
   @HttpCode(HttpStatus.OK)
   @ApiResponse({
     status: HttpStatus.OK,
@@ -197,18 +201,23 @@ export class CategoriesController {
     description: 'Forbidden',
   })
   updateSubCategory(
+    @Req() req: Request,
     @Param('id') categoryId: string,
     @Param('subCategoryId') subCategoryId: string,
     @Body() dto: UpdateSubCategoryDto,
   ): Promise<T_SubCategory> {
+    const user = req.user
     return this.subCategoriesService.updateSubCategory(
       Number(categoryId),
       Number(subCategoryId),
       dto,
+      Number(user['sub']),
     )
   }
 
-  @Delete(':id/sub-category/:subCategoryId')
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard('jwt'))
+  @Delete(':id/sub-categories/:subCategoryId')
   @HttpCode(HttpStatus.OK)
   @ApiResponse({
     status: HttpStatus.OK,
@@ -219,12 +228,15 @@ export class CategoriesController {
     description: 'Forbidden',
   })
   deleteSubCategory(
+    @Req() req: Request,
     @Param('id') categoryId: string,
     @Param('subCategoryId') subCategoryId: string,
   ): Promise<T_SubCategoryDelete> {
+    const user = req.user
     return this.subCategoriesService.deleteSubCategory(
       Number(categoryId),
       Number(subCategoryId),
+      Number(user['sub']),
     )
   }
 }

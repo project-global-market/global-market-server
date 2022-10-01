@@ -27,15 +27,6 @@ export class CategoriesService {
       where: {
         id,
       },
-      select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-        title: true,
-        description: true,
-        isActive: true,
-        subCategory: true,
-      },
     })
 
     if (!category) throw new ForbiddenException('Category not found')
