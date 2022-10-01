@@ -5,7 +5,7 @@ import { CategoriesService } from './categories.service'
 
 import { UsersService } from 'modules/users/users.service'
 import { SubCategoriesService } from 'modules/sub-categories/sub-categories.service'
-import { SubCategoriesItemsService } from 'modules/sub-category-items/sub-category-items'
+import { SubCategoriesItemsService } from 'modules/sub-category-items/sub-category-items.service'
 
 @Module({
   controllers: [CategoriesController],

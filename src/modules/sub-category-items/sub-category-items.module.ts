@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common'
 
-import { SubCategoriesItemsService } from './sub-category-items'
+import { SubCategoriesItemsService } from './sub-category-items.service'
 
 @Module({
   providers: [SubCategoriesItemsService],
