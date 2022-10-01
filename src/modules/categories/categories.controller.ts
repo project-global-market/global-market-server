@@ -23,7 +23,9 @@ import {
   T_SubCategory,
   T_SubCategoryDelete,
 } from 'modules/sub-categories/models'
+import { T_SubCategoryItem } from 'modules/sub-category-items/models'
 import { SubCategoriesService } from 'modules/sub-categories/sub-categories.service'
+import { SubCategoriesItemsService } from 'modules/sub-category-items/sub-category-items'
 import {
   CreateSubCategoryDto,
   UpdateSubCategoryDto,
@@ -35,6 +37,7 @@ export class CategoriesController {
   constructor(
     private categoriesService: CategoriesService,
     private subCategoriesService: SubCategoriesService,
+    private subCategoriesItemsService: SubCategoriesItemsService,
   ) {}
 
   @Get('')
@@ -237,6 +240,26 @@ export class CategoriesController {
       Number(categoryId),
       Number(subCategoryId),
       Number(user['sub']),
+    )
+  }
+
+  @Get(':id/sub-categories/:subCategoryId/items')
+  @HttpCode(HttpStatus.OK)
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Sub-category items fetched',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Forbidden',
+  })
+  getAllSubCategoryItems(
+    @Param('id') categoryId: string,
+    @Param('subCategoryId') subCategoryId: string,
+  ): Promise<T_SubCategoryItem[]> {
+    return this.subCategoriesItemsService.getAllSubCategoryItems(
+      Number(categoryId),
+      Number(subCategoryId),
     )
   }
 }
