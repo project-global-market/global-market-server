@@ -23,13 +23,17 @@ import {
   T_SubCategory,
   T_SubCategoryDelete,
 } from 'modules/sub-categories/models'
-import { T_SubCategoryItem } from 'modules/sub-category-items/models'
+import {
+  T_SubCategoryItem,
+  T_SubCategoryItemDelete,
+} from 'modules/sub-category-items/models'
 import { SubCategoriesService } from 'modules/sub-categories/sub-categories.service'
 import { SubCategoriesItemsService } from 'modules/sub-category-items/sub-category-items.service'
 import {
   CreateSubCategoryDto,
   UpdateSubCategoryDto,
 } from 'modules/sub-categories/dto'
+import { CreateSubCategoryItemDto } from 'modules/sub-category-items/dto'
 
 @Controller('categories')
 @ApiTags('Categories')
@@ -267,7 +271,7 @@ export class CategoriesController {
   @HttpCode(HttpStatus.OK)
   @ApiResponse({
     status: HttpStatus.OK,
-    description: 'Sub-category items fetched',
+    description: 'Sub-category item fetched',
   })
   @ApiResponse({
     status: HttpStatus.FORBIDDEN,
@@ -279,6 +283,74 @@ export class CategoriesController {
     @Param('subCategoryItemId') subCategoryItemId: string,
   ): Promise<T_SubCategoryItem> {
     return this.subCategoriesItemsService.getSubCategoryItem(
+      Number(categoryId),
+      Number(subCategoryId),
+      Number(subCategoryItemId),
+    )
+  }
+
+  @Post(':id/sub-categories/:subCategoryId/items')
+  @HttpCode(HttpStatus.CREATED)
+  @ApiResponse({
+    status: HttpStatus.CREATED,
+    description: 'Sub-category item created',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Forbidden',
+  })
+  createSubCategoryItem(
+    @Param('id') categoryId: string,
+    @Param('subCategoryId') subCategoryId: string,
+    @Body() dto: CreateSubCategoryItemDto,
+  ): Promise<T_SubCategoryItem> {
+    return this.subCategoriesItemsService.createSubCategoryItem(
+      Number(categoryId),
+      Number(subCategoryId),
+      dto,
+    )
+  }
+
+  @Put(':id/sub-categories/:subCategoryId/items/:subCategoryItemId')
+  @HttpCode(HttpStatus.OK)
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Sub-category item updated',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Forbidden',
+  })
+  updateSubCategoryItem(
+    @Param('id') categoryId: string,
+    @Param('subCategoryId') subCategoryId: string,
+    @Param('subCategoryItemId') subCategoryItemId: string,
+    @Body() dto: CreateSubCategoryItemDto,
+  ): Promise<T_SubCategoryItem> {
+    return this.subCategoriesItemsService.updateSubCategoryItem(
+      Number(categoryId),
+      Number(subCategoryId),
+      Number(subCategoryItemId),
+      dto,
+    )
+  }
+
+  @Delete(':id/sub-categories/:subCategoryId/items/:subCategoryItemId')
+  @HttpCode(HttpStatus.OK)
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Sub-category item deleted',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Forbidden',
+  })
+  deleteSubCategoryItem(
+    @Param('id') categoryId: string,
+    @Param('subCategoryId') subCategoryId: string,
+    @Param('subCategoryItemId') subCategoryItemId: string,
+  ): Promise<T_SubCategoryItemDelete> {
+    return this.subCategoriesItemsService.deleteSubCategoryItem(
       Number(categoryId),
       Number(subCategoryId),
       Number(subCategoryItemId),

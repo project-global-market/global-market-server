@@ -81,7 +81,7 @@ export class SubCategoriesService {
       data: {
         title: dto.title,
         description: dto.description,
-        categoryId: categoryId,
+        categoryId,
       },
     })
 

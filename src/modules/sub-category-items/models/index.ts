@@ -1,1 +1,4 @@
-export { T_SubCategoryItem } from './sub-category-items.model'
+export {
+  T_SubCategoryItem,
+  T_SubCategoryItemDelete,
+} from './sub-category-items.model'
