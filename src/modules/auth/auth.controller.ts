@@ -4,7 +4,7 @@ import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { AuthGuard } from '@nestjs/passport'
 
 import { AuthService } from './auth.service'
-import { I_SignIn, I_SignUp } from './models'
+import { I_SignIn, I_SignUp, T_CheckAuth } from './models'
 import { T_Tokens } from './models/tokens.model'
 import { SignInDto, SignUpDto } from './dto'
 import { Request } from 'express'
@@ -40,6 +40,23 @@ export class AuthController {
   })
   signIn(@Body() dto: SignInDto): Promise<I_SignIn> {
     return this.authService.signIn(dto)
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Post('check')
+  @HttpCode(HttpStatus.OK)
+  @ApiBearerAuth()
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Check success',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Forbidden',
+  })
+  checkAuthorization(@Req() req: Request): Promise<T_CheckAuth> {
+    const user = req.user
+    return this.authService.checkAuthorization(user['sub'])
   }
 
   @UseGuards(AuthGuard('jwt-refresh'))
