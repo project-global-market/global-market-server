@@ -1,2 +1,2 @@
-export { CreateSubCategoryDto } from './createSubCategory.dto'
-export { UpdateSubCategoryDto } from './updateSubCategory.dto'
+export { CreateSubCategoryDto } from './create-sub-category.dto'
+export { UpdateSubCategoryDto } from './update-sub-category.dto'

@@ -1,3 +1,3 @@
-export { I_SignUp } from './signUp.model'
-export { I_SignIn } from './signIn.model'
+export { I_SignUp } from './sign-up.model'
+export { I_SignIn } from './sign-in.model'
 export { T_Tokens } from './tokens.model'
