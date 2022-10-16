@@ -1,1 +1,1 @@
-export * from './support-chat-rooms'
+export * from './support-chat-tickets'
