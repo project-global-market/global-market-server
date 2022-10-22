@@ -8,6 +8,7 @@ import { PrismaModule } from 'modules/prisma/prisma.module'
 import { SubCategoriesModule } from 'modules/sub-categories/sub-categories.module'
 import { SupportChatRoomsModule } from 'modules/support-chat-tickets/support-chat-tickets.module'
 import { UsersModule } from 'modules/users/users.module'
+import { OrdersModule } from 'modules/orders/orders.module'
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { UsersModule } from 'modules/users/users.module'
     CategoriesModule,
     SubCategoriesModule,
     SupportChatRoomsModule,
+    OrdersModule,
     InfoModule,
   ],
 })

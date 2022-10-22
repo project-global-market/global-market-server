@@ -60,8 +60,33 @@ model Item {
   categoryId    Int?
   subCategory   SubCategory? @relation(fields: [subCategoryId], references: [id])
   subCategoryId Int?
+  orders        OrderItem[]
 
   @@map("items")
+}
+
+model Order {
+  id            Int          @id @default(autoincrement())
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  title         String
+  comment       String?
+  status        OrderStatus  @default(Pending)
+  items         OrderItem[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+    order       Order   @relation(fields: [orderId], references: [id])
+    orderId     Int
+    item        Item    @relation(fields: [itemId], references: [id])
+    itemId      Int
+    assignedAt  DateTime @default(now())
+    count       Int
+
+    @@id([orderId, itemId])
+    @@map("order-items")
 }
 
 enum RoleValue {
@@ -69,4 +94,10 @@ enum RoleValue {
   Admin
   Moderator
   User
+}
+
+enum OrderStatus {
+  Pending
+  Paid
+  Canceled
 }

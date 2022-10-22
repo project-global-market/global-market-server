@@ -70,6 +70,8 @@ export class SupportChatTicketsGateway {
     })
   }
 
+
+
   // Отправка сообщения в тикет руме
   @SubscribeMessage(E_SupportChatEmit.sendTicketMessage)
   sendTicketMessage(
