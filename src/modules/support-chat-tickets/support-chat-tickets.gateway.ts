@@ -14,7 +14,7 @@ import {
 
 import { E_SupportChatEmit, E_SupportChatSubscribe } from 'models/socket'
 
-@WebSocketGateway({ cors: true })
+@WebSocketGateway(8000, { cors: '*' })
 export class SupportChatTicketsGateway {
   @WebSocketServer()
   server: Server
@@ -40,11 +40,11 @@ export class SupportChatTicketsGateway {
   requestTickets(client: Socket) {
     const tickets = this.supportChatTicketsService.getAllTickets()
 
-    client.emit(E_SupportChatSubscribe.getTickets, tickets)
+    client.emit(E_SupportChatSubscribe.getTickets, { tickets })
   }
 
-  // Создание комнаты
-  @SubscribeMessage(E_SupportChatEmit.requestTickets)
+  // Создание тикета
+  @SubscribeMessage(E_SupportChatEmit.createTicket)
   createTicket(client: Socket, data: I_CreateTicketEmitPayload) {
     const { title, subTitle, author } = data
 
@@ -76,17 +76,16 @@ export class SupportChatTicketsGateway {
     client: Socket,
     data: I_CreateTicketMessageEmitPayload,
   ): void {
-    const { ticketId, text, author } = data
+    const { text, author } = data
 
-    const message = this.supportChatTicketsService.createMessage(
+    const { message, id } = this.supportChatTicketsService.createMessage(
       client.id,
-      ticketId,
       text,
       author,
     )
 
     this.server
-      .to(ticketId)
+      .to(id)
       .emit(E_SupportChatSubscribe.getTicketMessage, { message })
   }
 }

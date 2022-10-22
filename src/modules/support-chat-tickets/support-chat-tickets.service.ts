@@ -13,7 +13,21 @@ import {
 
 @Injectable()
 export class SupportChatTicketsService {
-  tickets: I_Ticket[] = []
+  tickets: I_Ticket[] = [
+    {
+      id: '1',
+      author: {
+        id: 1,
+        email: 'test',
+        socketId: '123',
+        username: '123456',
+      },
+      title: 'test',
+      subTitle: 'test subt',
+      type: E_TicketType.opened,
+      messages: [],
+    },
+  ]
 
   getAllTickets(): I_Ticket[] {
     return this.tickets
@@ -34,7 +48,7 @@ export class SupportChatTicketsService {
       type: E_TicketType.opened,
       author: {
         id: author.id,
-        socketId: author.socketId,
+        socketId,
         email: author.email,
         username: author.username,
       },
@@ -48,11 +62,10 @@ export class SupportChatTicketsService {
 
   createMessage(
     socketId: T_SocketId,
-    ticketId: T_TicketId,
     text: string,
     author: T_AuthorData,
-  ): I_TicketMessage {
-    const ticket = this.findTicketById(ticketId)
+  ): { message: I_TicketMessage; id: string } {
+    const ticket = this.findTicketBySocketId(socketId)
 
     const messageId = v4()
 
@@ -69,10 +82,14 @@ export class SupportChatTicketsService {
 
     ticket.messages.push(message)
 
-    return message
+    return { message, id: ticket.id }
   }
 
   findTicketById(id: T_TicketId): I_Ticket {
     return this.tickets.find((ticket) => ticket.id === id)
+  }
+
+  findTicketBySocketId(socketId: T_SocketId) {
+    return this.tickets.find((ticket) => ticket.author.socketId === socketId)
   }
 }

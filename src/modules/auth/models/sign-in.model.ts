@@ -8,5 +8,3 @@ export interface I_SignIn {
   role: string
   message: string
 }
-
-export type T_CheckAuth = Omit<I_SignIn, 'tokens'>

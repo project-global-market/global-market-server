@@ -8,7 +8,7 @@ import {
 import * as argon2 from 'argon2'
 
 import { SignInDto, SignUpDto } from './dto'
-import { I_SignIn, I_SignUp, T_CheckAuth, T_Tokens } from './models'
+import { I_SignIn, I_SignUp, T_Tokens } from './models'
 
 import { E_AuthType } from 'models/app'
 import { UsersService } from 'modules/users/users.service'
@@ -98,20 +98,6 @@ export class AuthService {
       return tokens
     } catch {
       throw new NotFoundException('Refresh token expired')
-    }
-  }
-
-  async checkAuthorization(userId: number): Promise<T_CheckAuth> {
-    const { id, email, username, role } = await this.usersService.findUserById(
-      userId,
-    )
-
-    return {
-      id,
-      email,
-      username,
-      role,
-      message: 'Check success',
     }
   }
 

@@ -1,9 +1,9 @@
-import { Injectable, ForbiddenException } from '@nestjs/common'
+import {ForbiddenException, Injectable} from '@nestjs/common'
 
-import { CreateSubCategoryItemDto, UpdateSubCategoryItemDto } from './dto'
-import { T_SubCategoryItem, T_SubCategoryItemDelete } from './models'
+import {CreateSubCategoryItemDto, UpdateSubCategoryItemDto} from './dto'
+import {T_SubCategoryItem, T_SubCategoryItemDelete} from './models'
 
-import { PrismaService } from 'modules/prisma/prisma.service'
+import {PrismaService} from 'modules/prisma/prisma.service'
 
 @Injectable()
 export class SubCategoriesItemsService {
@@ -36,14 +36,12 @@ export class SubCategoriesItemsService {
         `Sub-category with id ${subCategoryId} do not exists`,
       )
 
-    const subCategoryItems = await this.prisma.item.findMany({
+    return await this.prisma.item.findMany({
       where: {
         categoryId,
         subCategoryId,
       },
     })
-
-    return subCategoryItems
   }
 
   async getSubCategoryItem(
@@ -122,7 +120,7 @@ export class SubCategoriesItemsService {
         `Sub-category with id ${subCategoryId} do not exists`,
       )
 
-    const subCategoryItem = await this.prisma.item.create({
+    return await this.prisma.item.create({
       data: {
         title: dto.title,
         description: dto.description,
@@ -132,8 +130,6 @@ export class SubCategoriesItemsService {
         subCategoryId,
       },
     })
-
-    return subCategoryItem
   }
 
   async updateSubCategoryItem(

@@ -36,7 +36,6 @@ export interface I_CreateTicketEmitPayload {
 }
 
 export interface I_CreateTicketMessageEmitPayload {
-  ticketId: T_TicketId
   text: string
   author: T_AuthorData
 }
