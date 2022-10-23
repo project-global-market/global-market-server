@@ -1,9 +1,9 @@
-import {ForbiddenException, Injectable} from '@nestjs/common'
+import { ForbiddenException, Injectable } from '@nestjs/common'
 
-import {CreateSubCategoryItemDto, UpdateSubCategoryItemDto} from './dto'
-import {T_SubCategoryItem, T_SubCategoryItemDelete} from './models'
+import { CreateSubCategoryItemDto, UpdateSubCategoryItemDto } from './dto'
+import { T_SubCategoryItem, T_SubCategoryItemDelete } from './models'
 
-import {PrismaService} from 'modules/prisma/prisma.service'
+import { PrismaService } from 'modules/prisma/prisma.service'
 
 @Injectable()
 export class SubCategoriesItemsService {

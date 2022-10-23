@@ -1,8 +1,8 @@
 import { ConfigService } from '@nestjs/config'
 import { JwtService } from '@nestjs/jwt'
 import {
-  Injectable,
   ForbiddenException,
+  Injectable,
   NotFoundException,
 } from '@nestjs/common'
 import * as argon2 from 'argon2'
@@ -41,10 +41,7 @@ export class AuthService {
     await this.updateRefreshToken(user.id, tokens.refreshToken)
 
     return {
-      tokens: {
-        accessToken: tokens.accessToken,
-        refreshToken: tokens.refreshToken,
-      },
+      accessToken: tokens.accessToken,
       id: user.id,
       email: user.email,
       username: user.username,
@@ -69,10 +66,7 @@ export class AuthService {
     await this.updateRefreshToken(user.id, tokens.refreshToken)
 
     return {
-      tokens: {
-        accessToken: tokens.accessToken,
-        refreshToken: tokens.refreshToken,
-      },
+      accessToken: tokens.accessToken,
       id: user.id,
       email: user.email,
       username: user.username,
