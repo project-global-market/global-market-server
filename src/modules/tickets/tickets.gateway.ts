@@ -1,12 +1,12 @@
 import {
-  WebSocketServer,
-  WebSocketGateway,
   SubscribeMessage,
+  WebSocketGateway,
+  WebSocketServer,
 } from '@nestjs/websockets'
 import { Logger } from '@nestjs/common'
-import { Socket, Server } from 'socket.io'
+import { Server, Socket } from 'socket.io'
 
-import { SupportChatTicketsService } from './support-chat-tickets.service'
+import { TicketsService } from './tickets.service'
 import {
   I_CreateTicketEmitPayload,
   I_CreateTicketMessageEmitPayload,
@@ -15,13 +15,13 @@ import {
 import { E_SupportChatEmit, E_SupportChatSubscribe } from 'models/socket'
 
 @WebSocketGateway(8000, { cors: '*' })
-export class SupportChatTicketsGateway {
+export class TicketsGateway {
   @WebSocketServer()
   server: Server
 
   private logger: Logger = new Logger('SupportChatRoomsGateway')
 
-  constructor(private supportChatTicketsService: SupportChatTicketsService) {}
+  constructor(private supportChatTicketsService: TicketsService) {}
 
   async init() {
     this.logger.log('Init SupportChatRoomsGateway')
@@ -69,8 +69,6 @@ export class SupportChatTicketsGateway {
       message: 'Ticket created',
     })
   }
-
-
 
   // Отправка сообщения в тикет руме
   @SubscribeMessage(E_SupportChatEmit.sendTicketMessage)

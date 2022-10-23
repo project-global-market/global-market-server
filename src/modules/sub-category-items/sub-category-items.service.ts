@@ -17,19 +17,8 @@ export class SubCategoriesItemsService {
     categoryId: number,
     subCategoryId: number,
   ): Promise<T_SubCategoryItem[]> {
-    await this.checkCategoryExist(categoryId)
-
-    const subCategoryExists = await this.prisma.subCategory.findMany({
-      where: {
-        categoryId,
-        id: subCategoryId,
-      },
-    })
-
-    if (!subCategoryExists.length)
-      throw new ForbiddenException(
-        `Sub-category with id ${subCategoryId} do not exists`,
-      )
+    await this.checkCategoryExists(categoryId)
+    await this.checkSubCategoryExists(categoryId, subCategoryId)
 
     return await this.prisma.item.findMany({
       where: {
@@ -44,19 +33,8 @@ export class SubCategoriesItemsService {
     subCategoryId: number,
     subCategoryItemId: number,
   ): Promise<T_SubCategoryItem> {
-    await this.checkCategoryExist(categoryId)
-
-    const subCategoryExists = await this.prisma.subCategory.findMany({
-      where: {
-        categoryId,
-        id: subCategoryId,
-      },
-    })
-
-    if (!subCategoryExists.length)
-      throw new ForbiddenException(
-        `Sub-category with id ${subCategoryId} do not exists`,
-      )
+    await this.checkCategoryExists(categoryId)
+    await this.checkSubCategoryExists(categoryId, subCategoryId)
 
     const subCategoryItemMapped = await this.prisma.item.findMany({
       where: {
@@ -85,19 +63,8 @@ export class SubCategoriesItemsService {
     dto: CreateSubCategoryItemDto,
   ): Promise<T_SubCategoryItem> {
     await this.checkAuthorizedUser(userId)
-    await this.checkCategoryExist(categoryId)
-
-    const subCategoryExists = await this.prisma.subCategory.findMany({
-      where: {
-        categoryId,
-        id: subCategoryId,
-      },
-    })
-
-    if (!subCategoryExists.length)
-      throw new ForbiddenException(
-        `Sub-category with id ${subCategoryId} do not exists`,
-      )
+    await this.checkCategoryExists(categoryId)
+    await this.checkSubCategoryExists(categoryId, subCategoryId)
 
     return await this.prisma.item.create({
       data: {
@@ -119,32 +86,11 @@ export class SubCategoriesItemsService {
     dto: UpdateSubCategoryItemDto,
   ): Promise<T_SubCategoryItem> {
     await this.checkAuthorizedUser(userId)
-    await this.checkCategoryExist(categoryId)
+    await this.checkCategoryExists(categoryId)
+    await this.checkSubCategoryExists(categoryId, subCategoryId)
+    await this.checkSubCategoryItemExists(subCategoryItemId)
 
-    const subCategoryExists = await this.prisma.subCategory.findMany({
-      where: {
-        categoryId,
-        id: subCategoryId,
-      },
-    })
-
-    if (!subCategoryExists.length)
-      throw new ForbiddenException(
-        `Sub-category with id ${subCategoryId} do not exists`,
-      )
-
-    const subCategoryItemExists = await this.prisma.item.findUnique({
-      where: {
-        id: subCategoryItemId,
-      },
-    })
-
-    if (!subCategoryItemExists)
-      throw new ForbiddenException(
-        `Item with id ${subCategoryItemId} do not exists`,
-      )
-
-    const subCategoryItem = await this.prisma.item.update({
+    return await this.prisma.item.update({
       where: {
         id: subCategoryItemId,
       },
@@ -157,8 +103,6 @@ export class SubCategoriesItemsService {
         subCategoryId,
       },
     })
-
-    return subCategoryItem
   }
 
   async deleteSubCategoryItem(
@@ -168,30 +112,9 @@ export class SubCategoriesItemsService {
     userId: number,
   ): Promise<T_SubCategoryItemDelete> {
     await this.checkAuthorizedUser(userId)
-    await this.checkCategoryExist(categoryId)
-
-    const subCategoryExists = await this.prisma.subCategory.findMany({
-      where: {
-        categoryId,
-        id: subCategoryId,
-      },
-    })
-
-    if (!subCategoryExists.length)
-      throw new ForbiddenException(
-        `Sub-category with id ${subCategoryId} do not exists`,
-      )
-
-    const subCategoryItemExists = await this.prisma.item.findUnique({
-      where: {
-        id: subCategoryItemId,
-      },
-    })
-
-    if (!subCategoryItemExists)
-      throw new ForbiddenException(
-        `Item with id ${subCategoryItemId} do not exists`,
-      )
+    await this.checkCategoryExists(categoryId)
+    await this.checkSubCategoryExists(categoryId, subCategoryId)
+    await this.checkSubCategoryItemExists(subCategoryItemId)
 
     await this.prisma.item.deleteMany({
       where: {
@@ -214,7 +137,7 @@ export class SubCategoriesItemsService {
       throw new ForbiddenException('Permission denied')
   }
 
-  async checkCategoryExist(categoryId: number) {
+  async checkCategoryExists(categoryId: number) {
     const categoryExists = await this.prisma.category.findUnique({
       where: {
         id: categoryId,
@@ -223,6 +146,33 @@ export class SubCategoriesItemsService {
     if (!categoryExists)
       throw new ForbiddenException(
         `Category with id ${categoryId} do not exists`,
+      )
+  }
+
+  async checkSubCategoryExists(categoryId: number, subCategoryId: number) {
+    const subCategoryExists = await this.prisma.subCategory.findMany({
+      where: {
+        categoryId,
+        id: subCategoryId,
+      },
+    })
+
+    if (!subCategoryExists.length)
+      throw new ForbiddenException(
+        `Sub-category with id ${subCategoryId} do not exists`,
+      )
+  }
+
+  async checkSubCategoryItemExists(subCategoryItemId: number) {
+    const subCategoryItemExists = await this.prisma.item.findUnique({
+      where: {
+        id: subCategoryItemId,
+      },
+    })
+
+    if (!subCategoryItemExists)
+      throw new ForbiddenException(
+        `Item with id ${subCategoryItemId} do not exists`,
       )
   }
 }

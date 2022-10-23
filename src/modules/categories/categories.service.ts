@@ -1,4 +1,4 @@
-import { Injectable, ForbiddenException } from '@nestjs/common'
+import { ForbiddenException, Injectable } from '@nestjs/common'
 
 import { CreateCategoryDto, UpdateCategoryDto } from './dto'
 import { T_Category } from './models'
@@ -22,26 +22,25 @@ export class CategoriesService {
     return categories
   }
 
-  async findCategoryById(id: number): Promise<T_Category> {
+  async findCategoryById(categoryId: number): Promise<T_Category> {
     const category = await this.prisma.category.findUnique({
       where: {
-        id,
+        id: categoryId,
       },
     })
-
-    if (!category) throw new ForbiddenException('Category not found')
+    if (!category)
+      throw new ForbiddenException(
+        `Category with id ${categoryId} do not exists`,
+      )
 
     return category
   }
 
   async createCategory(
     dto: CreateCategoryDto,
-    id: number,
+    userId: number,
   ): Promise<T_Category> {
-    const authorizedUser = await this.usersService.findUserById(id)
-
-    if (authorizedUser.role === 'User' || authorizedUser.role === 'Moderator')
-      throw new ForbiddenException('Permission denied')
+    await this.checkAuthorizedUser(userId)
 
     return await this.prisma.category.create({
       data: {
@@ -55,26 +54,17 @@ export class CategoriesService {
   async updateCategory(
     dto: UpdateCategoryDto,
     userId: number,
-    id: number,
+    categoryId: number,
   ): Promise<T_Category> {
-    const authorizedUser = await this.usersService.findUserById(userId)
-
-    if (authorizedUser.role === 'User' || authorizedUser.role === 'Moderator')
-      throw new ForbiddenException('Permission denied')
+    await this.checkAuthorizedUser(userId)
+    await this.checkCategoryExists(categoryId)
 
     if (typeof dto.isActive !== 'boolean')
       throw new ForbiddenException('Active flag has to be boolean')
 
-    const categoryExists = await this.prisma.category.findUnique({
-      where: { id },
-    })
-
-    if (!categoryExists)
-      throw new ForbiddenException(`Category not found with id ${id}`)
-
     return await this.prisma.category.update({
       where: {
-        id,
+        id: categoryId,
       },
       data: {
         title: dto.title,
@@ -84,28 +74,41 @@ export class CategoriesService {
     })
   }
 
-  async deleteCategory(userId: number, id: number): Promise<T_CategoryDelete> {
-    const authorizedUser = await this.usersService.findUserById(userId)
-
-    if (authorizedUser.role === 'User' || authorizedUser.role === 'Moderator')
-      throw new ForbiddenException('Permission denied')
-
-    const categoryExists = await this.prisma.category.findUnique({
-      where: { id },
-    })
-
-    if (!categoryExists)
-      throw new ForbiddenException(`Category not found with id ${id}`)
+  async deleteCategory(
+    userId: number,
+    categoryId: number,
+  ): Promise<T_CategoryDelete> {
+    await this.checkAuthorizedUser(userId)
+    await this.checkCategoryExists(categoryId)
 
     await this.prisma.category.delete({
       where: {
-        id,
+        id: categoryId,
       },
     })
 
     return {
-      id,
-      message: `Category with id ${id} was deleted`,
+      categoryId,
+      message: `Category with id ${categoryId} was deleted`,
     }
+  }
+
+  async checkAuthorizedUser(userId: number) {
+    const authorizedUser = await this.usersService.findUserById(userId)
+
+    if (authorizedUser.role === 'User' || authorizedUser.role === 'Moderator')
+      throw new ForbiddenException('Permission denied')
+  }
+
+  async checkCategoryExists(categoryId: number) {
+    const categoryExists = await this.prisma.category.findUnique({
+      where: {
+        id: categoryId,
+      },
+    })
+    if (!categoryExists)
+      throw new ForbiddenException(
+        `Category with id ${categoryId} do not exists`,
+      )
   }
 }

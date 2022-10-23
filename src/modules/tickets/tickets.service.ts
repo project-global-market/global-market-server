@@ -5,14 +5,14 @@ import { T_SocketId } from 'models/app'
 
 import {
   E_TicketType,
-  T_AuthorData,
   I_Ticket,
-  T_TicketId,
   I_TicketMessage,
+  T_AuthorData,
+  T_TicketId,
 } from './models'
 
 @Injectable()
-export class SupportChatTicketsService {
+export class TicketsService {
   tickets: I_Ticket[] = [
     {
       id: '1',

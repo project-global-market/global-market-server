@@ -6,7 +6,7 @@ import { CategoriesModule } from 'modules/categories/categories.module'
 import { InfoModule } from 'modules/info/info.module'
 import { PrismaModule } from 'modules/prisma/prisma.module'
 import { SubCategoriesModule } from 'modules/sub-categories/sub-categories.module'
-import { SupportChatRoomsModule } from 'modules/support-chat-tickets/support-chat-tickets.module'
+import { TicketsModule } from 'modules/tickets/tickets.module'
 import { UsersModule } from 'modules/users/users.module'
 import { OrdersModule } from 'modules/orders/orders.module'
 import { ItemsModule } from './modules/sub-category-items/sub-category-items.module'
@@ -20,7 +20,7 @@ import { ItemsModule } from './modules/sub-category-items/sub-category-items.mod
     CategoriesModule,
     SubCategoriesModule,
     ItemsModule,
-    SupportChatRoomsModule,
+    TicketsModule,
     OrdersModule,
     InfoModule,
   ],
