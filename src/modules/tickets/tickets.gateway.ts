@@ -21,7 +21,7 @@ export class TicketsGateway {
 
   private logger: Logger = new Logger('SupportChatRoomsGateway')
 
-  constructor(private supportChatTicketsService: TicketsService) {}
+  constructor(private ticketsService: TicketsService) {}
 
   async init() {
     this.logger.log('Init SupportChatRoomsGateway')
@@ -38,7 +38,7 @@ export class TicketsGateway {
   // Получение тикетов для админки
   @SubscribeMessage(E_SupportChatEmit.requestTickets)
   requestTickets(client: Socket) {
-    const tickets = this.supportChatTicketsService.getAllTickets()
+    const tickets = this.ticketsService.getAllTickets()
 
     client.emit(E_SupportChatSubscribe.getTickets, { tickets })
   }
@@ -49,7 +49,7 @@ export class TicketsGateway {
     const { title, subTitle, author } = data
 
     // Создание тикета и добавляем туда юзера
-    const ticket = this.supportChatTicketsService.createTicket(
+    const ticket = this.ticketsService.createTicket(
       client.id,
       title,
       subTitle,
@@ -78,7 +78,7 @@ export class TicketsGateway {
   ): void {
     const { text, author } = data
 
-    const { message, id } = this.supportChatTicketsService.createMessage(
+    const { message, id } = this.ticketsService.createMessage(
       client.id,
       text,
       author,
