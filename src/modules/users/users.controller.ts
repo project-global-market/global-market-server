@@ -1,13 +1,13 @@
 import {
-  Post,
-  Get,
-  Put,
-  Delete,
   Body,
-  Param,
+  Delete,
+  Get,
   HttpCode,
-  UseGuards,
+  Param,
+  Post,
+  Put,
   Req,
+  UseGuards,
 } from '@nestjs/common/decorators'
 import { Controller, HttpStatus } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
@@ -20,7 +20,7 @@ import { UsersService } from './users.service'
 
 @ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'))
-@Controller('users')
+@Controller('api/users')
 @ApiTags('Users')
 export class UsersController {
   constructor(private usersService: UsersService) {}
@@ -40,7 +40,7 @@ export class UsersController {
     return this.usersService.getAllUsersSecured(user['email'])
   }
 
-  @Get(':id')
+  @Get(':userId')
   @HttpCode(HttpStatus.OK)
   @ApiResponse({
     status: HttpStatus.OK,
@@ -50,28 +50,12 @@ export class UsersController {
     status: HttpStatus.FORBIDDEN,
     description: 'Forbidden',
   })
-  getUser(@Param('id') id: string, @Req() req: Request): Promise<I_User> {
-    const user = req.user
-    return this.usersService.getUserSecured(id, user['email'])
-  }
-
-  @Put(':id')
-  @HttpCode(HttpStatus.OK)
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: 'User updated',
-  })
-  @ApiResponse({
-    status: HttpStatus.FORBIDDEN,
-    description: 'Forbidden',
-  })
-  updateUser(
-    @Param('id') id: string,
+  getUser(
+    @Param('userId') userId: string,
     @Req() req: Request,
-    @Body() dto: UpdateUserDto,
   ): Promise<I_User> {
     const user = req.user
-    return this.usersService.updateUserSecure(id, dto, user['email'])
+    return this.usersService.getUserSecured(userId, user['email'])
   }
 
   @Post('/')
@@ -89,7 +73,26 @@ export class UsersController {
     return this.usersService.createUserSecure(user['email'], dto)
   }
 
-  @Delete(':id')
+  @Put(':userId')
+  @HttpCode(HttpStatus.OK)
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'User updated',
+  })
+  @ApiResponse({
+    status: HttpStatus.FORBIDDEN,
+    description: 'Forbidden',
+  })
+  updateUser(
+    @Param('userId') userId: string,
+    @Req() req: Request,
+    @Body() dto: UpdateUserDto,
+  ): Promise<I_User> {
+    const user = req.user
+    return this.usersService.updateUserSecure(userId, dto, user['email'])
+  }
+
+  @Delete(':userId')
   @HttpCode(HttpStatus.OK)
   @ApiResponse({
     status: HttpStatus.CREATED,
@@ -101,9 +104,9 @@ export class UsersController {
   })
   deleteUser(
     @Req() req: Request,
-    @Param('id') id: string,
+    @Param('userId') userId: string,
   ): Promise<T_UserDelete> {
     const user = req.user
-    return this.usersService.deleteUserSecure(user['email'], id)
+    return this.usersService.deleteUserSecure(user['email'], userId)
   }
 }

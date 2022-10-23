@@ -1,15 +1,14 @@
-import { Post, Body, HttpCode, UseGuards, Req } from '@nestjs/common/decorators'
+import { Body, HttpCode, Post, Req, UseGuards } from '@nestjs/common/decorators'
 import { Controller, HttpStatus } from '@nestjs/common'
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { AuthGuard } from '@nestjs/passport'
 
 import { AuthService } from './auth.service'
-import { I_SignIn, I_SignUp } from './models'
-import { T_Tokens } from './models/tokens.model'
+import { I_SignIn, I_SignUp, T_Tokens } from './models'
 import { SignInDto, SignUpDto } from './dto'
 import { Request } from 'express'
 
-@Controller('auth')
+@Controller('api/auth')
 @ApiTags('Auth')
 export class AuthController {
   constructor(private authService: AuthService) {}

@@ -14,9 +14,9 @@ import { InfoService } from './info.service'
 import { I_User } from 'modules/users/models/users.model'
 import { Request } from 'express'
 
-@ApiBearerAuth()
 @UseGuards(AuthGuard('jwt'))
-@Controller('info')
+@ApiBearerAuth()
+@Controller('api/info')
 @ApiTags('Info')
 export class InfoController {
   constructor(private infoService: InfoService) {}

@@ -18,7 +18,7 @@ import { CreateOrderDto, UpdateOrderDto } from './dto'
 import { T_Order } from './models'
 import { OrdersService } from './orders.service'
 
-@Controller('orders')
+@Controller('api/orders')
 @ApiTags('Orders')
 export class OrdersController {
   constructor(private ordersService: OrdersService) {}

@@ -1,4 +1,4 @@
-import { Injectable, ForbiddenException } from '@nestjs/common'
+import { ForbiddenException, Injectable } from '@nestjs/common'
 
 import { T_SubCategory, T_SubCategoryDelete } from './models'
 
@@ -64,8 +64,11 @@ export class SubCategoriesService {
 
   async createSubCategory(
     categoryId: number,
+    userId: number,
     dto: CreateSubCategoryDto,
   ): Promise<T_SubCategory> {
+    await this.checkAuthorizedUser(userId)
+
     const categoryExists = await this.prisma.category.findUnique({
       where: {
         id: categoryId,
@@ -77,15 +80,13 @@ export class SubCategoriesService {
         `Category with id ${categoryId} do not exists`,
       )
 
-    const subCategory = await this.prisma.subCategory.create({
+    return await this.prisma.subCategory.create({
       data: {
         title: dto.title,
         description: dto.description,
         categoryId,
       },
     })
-
-    return subCategory
   }
 
   async updateSubCategory(
@@ -94,10 +95,7 @@ export class SubCategoriesService {
     dto: UpdateSubCategoryDto,
     userId: number,
   ): Promise<T_SubCategory> {
-    const authorizedUser = await this.usersService.findUserById(userId)
-
-    if (authorizedUser.role === 'User' || authorizedUser.role === 'Moderator')
-      throw new ForbiddenException('Permission denied')
+    await this.checkAuthorizedUser(userId)
 
     const categoryExists = await this.prisma.category.findUnique({
       where: {
@@ -121,7 +119,7 @@ export class SubCategoriesService {
         `Sub-category with id ${subCategoryId} do not exists`,
       )
 
-    const subCategory = await this.prisma.subCategory.update({
+    return await this.prisma.subCategory.update({
       where: {
         id: subCategoryId,
       },
@@ -131,8 +129,6 @@ export class SubCategoriesService {
         categoryId: categoryId,
       },
     })
-
-    return subCategory
   }
 
   async deleteSubCategory(
@@ -140,10 +136,7 @@ export class SubCategoriesService {
     subCategoryId: number,
     userId: number,
   ): Promise<T_SubCategoryDelete> {
-    const authorizedUser = await this.usersService.findUserById(userId)
-
-    if (authorizedUser.role === 'User' || authorizedUser.role === 'Moderator')
-      throw new ForbiddenException('Permission denied')
+    await this.checkAuthorizedUser(userId)
 
     const categoryExists = await this.prisma.category.findUnique({
       where: {
@@ -178,5 +171,12 @@ export class SubCategoriesService {
       id: subCategoryId,
       message: `Sub-category with id ${subCategoryId} was deleted`,
     }
+  }
+
+  async checkAuthorizedUser(userId: number) {
+    const authorizedUser = await this.usersService.findUserById(userId)
+
+    if (authorizedUser.role === 'User' || authorizedUser.role === 'Moderator')
+      throw new ForbiddenException('Permission denied')
   }
 }
